@@ -9,7 +9,7 @@ import org.jetbrains.ktor.routing.*
 fun Application.main() {
     install(DefaultHeaders)
     install(Locations)
-    install(Routing) {
+    routing {
         get("/") {
             call.respondText("root")
         }
@@ -32,19 +32,23 @@ fun Application.main() {
 val map: HashMap<String, Route> = hashMapOf()
 
 fun Application.add(plugin: Plugin) {
-    feature(Routing).route("/api") {
-        route(plugin.id) {
-            val router = apply(plugin::routing)
-            map.put(plugin.id, router)
+    routing {
+        route("/api") {
+            route(plugin.id) {
+                val router = apply(plugin::routing)
+                map.put(plugin.id, router)
+            }
         }
     }
 }
 
 fun Application.del(plugin: Plugin) {
-    feature(Routing).route("/api") {
-        val router = map.remove(plugin.id)
-        router?.let {
-            children.remove(router)
+    routing {
+        route("/api") {
+            val router = map.remove(plugin.id)
+            router?.let {
+                children.remove(router)
+            }
         }
     }
 }
