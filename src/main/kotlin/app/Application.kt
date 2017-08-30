@@ -2,54 +2,61 @@ package app
 
 import org.jetbrains.ktor.application.*
 import org.jetbrains.ktor.features.*
-import org.jetbrains.ktor.locations.Locations
+import org.jetbrains.ktor.gson.*
+import org.jetbrains.ktor.locations.*
 import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.routing.*
+import org.jetbrains.ktor.websocket.*
+import plugins.*
+
+data class Response(val route: String)
+
+private var apiRoute: Route? = null
+private val map: HashMap<String, Route> = hashMapOf()
 
 fun Application.main() {
     install(DefaultHeaders)
     install(Locations)
+    install(CallLogging)
+    install(WebSockets)
+    install(GsonSupport) {
+        setPrettyPrinting()
+    }
     routing {
         get("/") {
-            call.respondText("root")
+            call.respond(Response("root"))
         }
-        route("/api") {
+        apiRoute = route("/api") {
             get {
-                call.respondText("api")
+                call.respond(Response("api"))
             }
             get("/add") {
                 add(TestPlugin)
-                call.respondText("add")
+                call.respond(Response("add"))
             }
             get("/del") {
                 del(TestPlugin)
-                call.respondText("del")
+                call.respond(Response("del"))
             }
         }
+        add(TestPlugin)
     }
 }
 
-val map: HashMap<String, Route> = hashMapOf()
-
-fun Application.add(plugin: Plugin) {
-    routing {
-        route("/api") {
-            route(plugin.id) {
-                val router = apply(plugin::routing)
-                map.put(plugin.id, router)
-            }
+private fun add(plugin: Plugin) {
+    apiRoute?.apply {
+        val router = route(plugin.id) {
+            apply(plugin::routing)
         }
+        map.put(plugin.id, router)
     }
 }
 
-fun Application.del(plugin: Plugin) {
-    routing {
-        route("/api") {
-            val router = map.remove(plugin.id)
-            router?.let {
-                children.remove(router)
-            }
+private fun del(plugin: Plugin) {
+    apiRoute?.apply {
+        val router = map.remove(plugin.id)
+        router?.let {
+            children.remove(router)
         }
     }
 }
-
