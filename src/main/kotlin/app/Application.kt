@@ -3,6 +3,7 @@ package app
 import org.jetbrains.ktor.application.*
 import org.jetbrains.ktor.features.*
 import org.jetbrains.ktor.gson.*
+import org.jetbrains.ktor.http.HttpStatusCode
 import org.jetbrains.ktor.locations.*
 import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.routing.*
@@ -10,6 +11,9 @@ import org.jetbrains.ktor.websocket.*
 import plugins.*
 
 data class Response(val route: String)
+data class Error(val route: String,
+                 val status: Int,
+                 val message: String)
 
 private var apiRoute: Route? = null
 private val map: HashMap<String, Route> = hashMapOf()
@@ -22,6 +26,19 @@ fun Application.main() {
     install(GsonSupport) {
         setPrettyPrinting()
     }
+    install(StatusPages) {
+        status(HttpStatusCode.NotFound,
+                HttpStatusCode.Unauthorized,
+                HttpStatusCode.Forbidden,
+                HttpStatusCode.InternalServerError) {
+            call.response.status(it)
+            call.respond(Error(
+                    call.request.local.uri,
+                    it.value,
+                    it.description
+            ))
+        }
+    }
     routing {
         get("/") {
             call.respond(Response("root"))
@@ -30,31 +47,29 @@ fun Application.main() {
             get {
                 call.respond(Response("api"))
             }
-            get("/add") {
-                add(TestPlugin)
-                call.respond(Response("add"))
+            get("/install") {
+                TestPlugin.install()
+                call.respond(Response("install"))
             }
-            get("/del") {
-                del(TestPlugin)
-                call.respond(Response("del"))
+            get("/uninstall") {
+                TestPlugin.uninstall()
+                call.respond(Response("uninstall"))
             }
         }
-        add(TestPlugin)
+        TestPlugin.install()
     }
 }
 
-private fun add(plugin: Plugin) {
+private fun Plugin.install() {
     apiRoute?.apply {
-        val router = route(plugin.id) {
-            apply(plugin::routing)
-        }
-        map.put(plugin.id, router)
+        val router = route(id, this@install::routing)
+        map.put(id, router)
     }
 }
 
-private fun del(plugin: Plugin) {
+private fun Plugin.uninstall() {
     apiRoute?.apply {
-        val router = map.remove(plugin.id)
+        val router = map.remove(id)
         router?.let {
             children.remove(router)
         }
