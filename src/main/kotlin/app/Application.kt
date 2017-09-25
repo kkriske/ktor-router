@@ -61,6 +61,7 @@ fun Application.main() {
 }
 
 private fun Plugin.install() {
+    //todo: check if plugin already exists
     apiRoute?.apply {
         val router = route(id, this@install::routing)
         map.put(id, router)
