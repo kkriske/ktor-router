@@ -15,9 +15,6 @@ data class Error(val route: String,
                  val status: Int,
                  val message: String)
 
-private var apiRoute: Route? = null
-private val map: HashMap<String, Route> = hashMapOf()
-
 fun Application.main() {
     install(DefaultHeaders)
     install(Locations)
@@ -43,36 +40,40 @@ fun Application.main() {
         get("/") {
             call.respond(Response("root"))
         }
-        apiRoute = route("/api") {
-            get {
-                call.respond(Response("api"))
-            }
-            get("/install") {
-                TestPlugin.install()
-                call.respond(Response("install"))
-            }
-            get("/uninstall") {
-                TestPlugin.uninstall()
-                call.respond(Response("uninstall"))
-            }
+        api()
+    }
+}
+
+fun Route.api() {
+    route("/api") {
+        val map: HashMap<String, Route> = hashMapOf()
+
+        fun Plugin.install() {
+            if (map.containsKey(id)) throw DuplicatePluginException("A Plugin with id '$id' already exists.")
+            map[id] = route(id, this::routing)
         }
-        TestPlugin.install()
-    }
-}
 
-private fun Plugin.install() {
-    //todo: check if plugin already exists
-    apiRoute?.apply {
-        val router = route(id, this@install::routing)
-        map.put(id, router)
-    }
-}
-
-private fun Plugin.uninstall() {
-    apiRoute?.apply {
-        val router = map.remove(id)
-        router?.let {
+        fun Plugin.uninstall() {
+            val router = map.remove(id) ?: throw PluginNotFoundException("There was no plugin with id $id installed.")
             children.remove(router)
         }
+        //install TestPlugin by default
+        TestPlugin.install()
+
+        get {
+            call.respond(Response("api"))
+        }
+        get("/install") {
+            TestPlugin.install()
+            call.respond(Response("install"))
+        }
+        get("/uninstall") {
+            TestPlugin.uninstall()
+            call.respond(Response("uninstall"))
+        }
     }
 }
+
+private class DuplicatePluginException(message: String) : Exception(message)
+private class PluginNotFoundException(message: String) : Exception(message)
+
