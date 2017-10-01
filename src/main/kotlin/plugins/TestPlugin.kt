@@ -8,14 +8,14 @@ import org.jetbrains.ktor.routing.*
 import org.jetbrains.ktor.websocket.*
 
 @location("/")
-class index
+class Index
 
 object TestPlugin : Plugin {
 
     override val id = "test"
 
     override fun Route.routing() {
-        get<index> {
+        get<Index> {
             call.respond(Response("test plugin"))
         }
         get("/a") {
