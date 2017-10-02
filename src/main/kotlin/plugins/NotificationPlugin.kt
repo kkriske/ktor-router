@@ -41,8 +41,11 @@ object NotificationPlugin : Plugin {
             send(Frame.Text("In nomine patre, et filii, et spiritus sanctus"))
 
             incoming.consumeEach { frame ->
-                if (frame is Frame.Text && frame.readText() == "quit") {
-                    close(CloseReason(CloseReason.Codes.NORMAL, "You closed this shit"))
+                if (frame is Frame.Text) {
+                    when(frame.readText()) {
+                        "quit" -> close(CloseReason(CloseReason.Codes.NORMAL, "You closed this shit"))
+                        else -> send(Frame.Text("kloothommel"))
+                    }
                 }
             }
 
