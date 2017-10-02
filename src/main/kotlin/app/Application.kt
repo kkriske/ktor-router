@@ -59,16 +59,19 @@ fun Route.api() {
         }
         //install TestPlugin by default
         TestPlugin.install()
+        NotificationPlugin.install()
 
         get {
             call.respond(Response("api"))
         }
         get("/install") {
             TestPlugin.install()
+            NotificationPlugin.install()
             call.respond(Response("install"))
         }
         get("/uninstall") {
             TestPlugin.uninstall()
+            NotificationPlugin.uninstall()
             call.respond(Response("uninstall"))
         }
     }
