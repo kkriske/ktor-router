@@ -1,7 +1,6 @@
 package plugins.usermanagement
 
 import app.Plugin
-import app.Response
 import org.jetbrains.ktor.locations.get
 import org.jetbrains.ktor.locations.location
 import org.jetbrains.ktor.locations.post
