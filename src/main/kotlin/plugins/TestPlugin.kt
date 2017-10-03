@@ -10,21 +10,28 @@ import org.jetbrains.ktor.websocket.*
 @location("/")
 class Index
 
-object TestPlugin : Plugin {
+object TestPlugin : Plugin() {
 
     override val id = "test"
 
-    override fun Route.routing() {
-        get<Index> {
-            call.respond(Response("test plugin"))
-        }
-        get("/a") {
-            call.respond(Response("extra route"))
-        }
-        webSocket("/ws") {
-            incoming.consumeEach {
-                send(it)
+    override fun PluginConfig.configuration() {
+        router {
+            get<Index> {
+                call.respond(Response("test plugin"))
             }
+            get("/a") {
+                call.respond(Response("extra route"))
+            }
+            webSocket("/ws") {
+                incoming.consumeEach {
+                    send(it)
+                }
+            }
+        }
+
+        dependencies {
+            //bind<T>() with singleton { T() }
+            //todo: own dsl? default kodein dsl?
         }
     }
 }

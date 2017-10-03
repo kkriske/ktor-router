@@ -36,13 +36,23 @@ compileTestKotlin {
 dependencies {
     ext.kotlin_version = '1.1.51'
     ext.ktor_version = '0.4.1-alpha-16'
+    ext.kodein_version = '4.1.0'
+    ext.pf4j_version = '1.3.0'
+    ext.pf4j_update_version = '0.4.0'
+
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+
     compile "org.jetbrains.ktor:ktor-core:$ktor_version"
     compile "org.jetbrains.ktor:ktor-netty:$ktor_version"
     compile "org.jetbrains.ktor:ktor-gson:$ktor_version"
     compile "org.jetbrains.ktor:ktor-websockets:$ktor_version"
     compile "org.jetbrains.ktor:ktor-locations:$ktor_version"
+
+    compile "com.github.salomonbrys.kodein:kodein:$kodein_version"
+
+    compile "ro.fortsoft.pf4j:pf4j:$pf4j_version"
+    compile "ro.fortsoft.pf4j:pf4j-update:$pf4j_update_version"
 
     compile "org.slf4j:jul-to-slf4j:1.7.12"
     compile "ch.qos.logback:logback-classic:1.2.1"

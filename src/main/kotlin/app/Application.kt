@@ -50,7 +50,7 @@ fun Route.api() {
 
         fun Plugin.install() {
             if (map.containsKey(id)) throw DuplicatePluginException("A Plugin with id '$id' already exists.")
-            map[id] = route(id, this::routing)
+            map[id] = route(id, this.config._router)
         }
 
         fun Plugin.uninstall() {
