@@ -9,6 +9,7 @@ import org.jetbrains.ktor.response.respond
 import org.jetbrains.ktor.routing.Route
 import org.jetbrains.ktor.routing.delete
 import org.jetbrains.ktor.routing.get
+import org.jetbrains.ktor.routing.patch
 import plugins.usermanagement.database.UserManagementDatabase
 import plugins.usermanagement.models.User
 
@@ -45,14 +46,20 @@ object UserManagementPlugin : Plugin {
             call.respond(Result(user!!))
         }
 
+        patch("/{id}") {
+            val id = call.parameters["id"]!!
+            val user = call.receive<User>()
+            userManagementDatabase.update(id, user)
+        }
+
         delete("/{id}") {
             val id = call.parameters["id"]
-            if(id == null){
+            if (id == null) {
                 call.respond("No id given")
             }
 
 
-            if(userManagementDatabase.delete(id!!)){
+            if (userManagementDatabase.delete(id!!)) {
                 call.respond("OK")
             } else {
                 call.respond("User does not exist")
