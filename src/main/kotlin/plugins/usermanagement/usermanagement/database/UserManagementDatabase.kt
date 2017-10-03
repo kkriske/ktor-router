@@ -28,4 +28,8 @@ object UserManagementDatabase {
         return this.collection.findOneById(id)
     }
 
+    fun delete(id: String): Boolean {
+        return this.collection.deleteOneById(id).deletedCount.compareTo(1) == 0
+    }
+
 }
