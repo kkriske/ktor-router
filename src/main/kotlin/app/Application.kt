@@ -9,6 +9,7 @@ import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.routing.*
 import org.jetbrains.ktor.websocket.*
 import plugins.*
+import plugins.usermanagement.UserManagementPlugin
 
 data class Response(val route: String)
 data class Error(val route: String,
@@ -60,6 +61,7 @@ fun Route.api() {
         //install TestPlugin by default
         TestPlugin.install()
         NotificationPlugin.install()
+        UserManagementPlugin.install()
 
         get {
             call.respond(Response("api"))

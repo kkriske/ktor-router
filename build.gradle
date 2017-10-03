@@ -44,6 +44,8 @@ dependencies {
     compile "org.jetbrains.ktor:ktor-websockets:$ktor_version"
     compile "org.jetbrains.ktor:ktor-locations:$ktor_version"
 
+    compile 'org.litote.kmongo:kmongo-native:3.5.0'
+
     compile "org.slf4j:jul-to-slf4j:1.7.12"
     compile "ch.qos.logback:logback-classic:1.2.1"
 
