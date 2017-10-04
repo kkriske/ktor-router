@@ -4,7 +4,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinContainer
 
 /**
- * A class that can be used to configure a mutable kodein object and as a kodein object.
+ * A configurable mutable kodein object.
  *
  * This implementation is based on the ConfigurableKodein implementation at https://github.com/SalomonBrys/Kodein
  */
