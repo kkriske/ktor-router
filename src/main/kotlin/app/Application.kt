@@ -1,15 +1,24 @@
 package app
 
-import org.jetbrains.ktor.application.*
-import org.jetbrains.ktor.features.*
-import org.jetbrains.ktor.gson.*
+import org.jetbrains.ktor.application.Application
+import org.jetbrains.ktor.application.install
+import org.jetbrains.ktor.features.CORS
+import org.jetbrains.ktor.features.CallLogging
+import org.jetbrains.ktor.features.DefaultHeaders
+import org.jetbrains.ktor.features.StatusPages
+import org.jetbrains.ktor.gson.GsonSupport
 import org.jetbrains.ktor.http.HttpStatusCode
-import org.jetbrains.ktor.locations.*
-import org.jetbrains.ktor.response.*
-import org.jetbrains.ktor.routing.*
-import org.jetbrains.ktor.websocket.*
-import plugins.*
+import org.jetbrains.ktor.locations.Locations
+import org.jetbrains.ktor.response.respond
+import org.jetbrains.ktor.routing.Route
+import org.jetbrains.ktor.routing.get
+import org.jetbrains.ktor.routing.route
+import org.jetbrains.ktor.routing.routing
+import org.jetbrains.ktor.websocket.WebSockets
+import plugins.NotificationPlugin
+import plugins.TestPlugin
 import plugins.usermanagement.UserManagementPlugin
+import kotlin.collections.set
 
 data class Response(val route: String)
 data class Error(val route: String,
@@ -21,6 +30,9 @@ fun Application.main() {
     install(Locations)
     install(CallLogging)
     install(WebSockets)
+    install(CORS) {
+        host("*")
+    }
     install(GsonSupport) {
         setPrettyPrinting()
     }
