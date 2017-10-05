@@ -9,6 +9,7 @@ import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.routing.*
 import org.jetbrains.ktor.websocket.*
 import plugins.*
+import api.*
 
 data class Response(val route: String)
 data class Error(val route: String,
@@ -47,19 +48,19 @@ fun Application.main() {
 fun Route.api() {
     route("/api") {
         val map: HashMap<String, Route> = hashMapOf()
+        val kodein = MutableKodein()
 
         fun Plugin.install() {
             if (map.containsKey(id)) throw DuplicatePluginException("A Plugin with id '$id' already exists.")
-            config._routerConfig?.let {
-                map[id] = route(it.path, it.route)
-            }
-            MutableKodein.addModule(id, config._kodein)
+            config.routerConfig?.let { map[id] = route(it.path, it.route) }
+            kodein.addModule(id, config.providerConfig.module)
         }
 
         fun Plugin.uninstall() {
+            //TODO: if a plugin does not specify routes, map.remove returns `null` and the error should not be thrown.
             val router = map.remove(id) ?: throw PluginNotFoundException("There was no plugin with id $id installed.")
             children.remove(router)
-            MutableKodein.removeModule(id)
+            kodein.removeModule(id)
         }
         //install TestPlugin by default
         TestPlugin.install()

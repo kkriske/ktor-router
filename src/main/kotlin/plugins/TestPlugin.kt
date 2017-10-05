@@ -1,5 +1,6 @@
 package plugins
 
+import api.*
 import app.*
 import kotlinx.coroutines.experimental.channels.*
 import org.jetbrains.ktor.locations.*
@@ -29,7 +30,7 @@ object TestPlugin : Plugin() {
             }
         }
 
-        dependencies {
+        provide {
             //bind<T>() with singleton { T() }
             //todo: own dsl? default kodein dsl?
         }
