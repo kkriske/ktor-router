@@ -22,13 +22,13 @@ abstract class Plugin {
 class PluginConfig internal constructor() {
 
 
-    internal var _router: Route.() -> Unit = {}
+    internal var _routerConfig: RouterConfig? = null
         private set
     internal var _kodein: Kodein.Module = Kodein.Module {}
         private set
 
-    fun router(block: Route.() -> Unit) {
-        _router = block
+    fun router(path: String, block: Route.() -> Unit) {
+        _routerConfig = RouterConfig(path, block)
     }
 
     //TODO: kodein config
@@ -36,5 +36,7 @@ class PluginConfig internal constructor() {
         _kodein = Kodein.Module(init = block)
     }
 }
+
+internal class RouterConfig(val path: String, val route: Route.() -> Unit)
 
 //internal fun Plugin.routing(route: Route) = route.routing()

@@ -15,7 +15,7 @@ object NotificationPlugin : Plugin() {
     override val id = "notification"
 
     override fun PluginConfig.configuration() {
-        router {
+        router("notification") {
             install(Sessions) {
                 cookie<NotificationSession>("SESSION")
             }

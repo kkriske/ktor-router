@@ -1,7 +1,6 @@
 package app
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinContainer
+import com.github.salomonbrys.kodein.*
 
 /**
  * A configurable mutable kodein object.
@@ -17,16 +16,11 @@ internal object MutableKodein : Kodein {
     private @Volatile
     var _instance: Kodein? = null
 
-    fun addModule(id: String, module: Kodein.Module) {
-        synchronized(_lock) {
-            _instance = null
-            _map[id] = { import(module) }
-        }
-    }
+    fun addModule(id: String, module: Kodein.Module) = lock { _map[id] = { import(module) } }
 
-    fun removeModule(id: String) {
-        _map.remove(id)
-    }
+    fun removeModule(id: String) = lock { _map.remove(id) }
+
+    private fun lock(block: MutableKodein.() -> Unit) = synchronized(_lock) { _instance = null; apply(block) }
 
     private fun getOrConstruct(): Kodein {
         _instance?.let { return it }

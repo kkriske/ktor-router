@@ -12,10 +12,10 @@ class Index
 
 object TestPlugin : Plugin() {
 
-    override val id = "test"
+    override val id = "fknjansletsloerienublij#userfriendly&stuff"
 
     override fun PluginConfig.configuration() {
-        router {
+        router("test") {
             get<Index> {
                 call.respond(Response("test plugin"))
             }

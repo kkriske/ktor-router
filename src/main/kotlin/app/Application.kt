@@ -1,7 +1,5 @@
 package app
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.conf.*
 import org.jetbrains.ktor.application.*
 import org.jetbrains.ktor.features.*
 import org.jetbrains.ktor.gson.*
@@ -52,8 +50,10 @@ fun Route.api() {
 
         fun Plugin.install() {
             if (map.containsKey(id)) throw DuplicatePluginException("A Plugin with id '$id' already exists.")
-            map[id] = route(id, this.config._router)
-            MutableKodein.addModule(id, this.config._kodein)
+            config._routerConfig?.let {
+                map[id] = route(it.path, it.route)
+            }
+            MutableKodein.addModule(id, config._kodein)
         }
 
         fun Plugin.uninstall() {
