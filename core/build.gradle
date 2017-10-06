@@ -1,0 +1,15 @@
+apply plugin: 'application'
+
+mainClassName = 'org.jetbrains.ktor.netty.DevelopmentHost'
+
+dependencies {
+    compile project(':api')
+    compile project(':plugins:testplugin')
+    compile project(':plugins:notifications')
+
+    compile "ro.fortsoft.pf4j:pf4j:$pf4j_version"
+    compile "ro.fortsoft.pf4j:pf4j-update:$pf4j_update_version"
+
+    compile "org.slf4j:jul-to-slf4j:1.7.12"
+    compile "ch.qos.logback:logback-classic:1.2.1"
+}

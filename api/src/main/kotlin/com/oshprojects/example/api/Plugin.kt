@@ -1,4 +1,4 @@
-package api
+package com.oshprojects.example.api
 
 import com.github.salomonbrys.kodein.*
 import org.jetbrains.ktor.pipeline.ContextDsl
@@ -23,14 +23,13 @@ annotation class ConfigDsl
 @ConfigDsl
 class PluginConfig internal constructor(init: PluginConfig.() -> Unit) {
 
-    init {
-        init()
-    }
-
+    val providerConfig = ProviderConfig()
     var routerConfig: RouterConfig? = null
         private set
 
-    val providerConfig = ProviderConfig()
+    init {
+        init()
+    }
 
     fun router(path: String, block: Route.() -> Unit) {
         routerConfig = RouterConfig(path, block)

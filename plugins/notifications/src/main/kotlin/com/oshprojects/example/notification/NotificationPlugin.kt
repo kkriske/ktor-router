@@ -1,7 +1,6 @@
-package plugins
+package com.oshprojects.example.notification
 
-import api.*
-import app.Response
+import com.oshprojects.example.api.*
 import kotlinx.coroutines.experimental.channels.consumeEach
 import org.jetbrains.ktor.application.*
 import org.jetbrains.ktor.response.respond
@@ -9,6 +8,8 @@ import org.jetbrains.ktor.routing.get
 import org.jetbrains.ktor.sessions.*
 import org.jetbrains.ktor.util.nextNonce
 import org.jetbrains.ktor.websocket.*
+
+data class Response(val route: String)
 
 object NotificationPlugin : Plugin() {
 

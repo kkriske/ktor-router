@@ -1,7 +1,6 @@
-package plugins
+package com.oshprojects.example.testplugin
 
-import api.*
-import app.*
+import com.oshprojects.example.api.*
 import kotlinx.coroutines.experimental.channels.*
 import org.jetbrains.ktor.locations.*
 import org.jetbrains.ktor.response.*
@@ -10,6 +9,8 @@ import org.jetbrains.ktor.websocket.*
 
 @location("/")
 class Index
+
+data class Response(val route: String)
 
 object TestPlugin : Plugin() {
 
@@ -31,8 +32,10 @@ object TestPlugin : Plugin() {
         }
 
         provide {
+            singleton { 5 }
             //bind<T>() with singleton { T() }
             //todo: own dsl? default kodein dsl?
         }
+
     }
 }

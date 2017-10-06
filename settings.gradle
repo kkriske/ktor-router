@@ -1,2 +1,9 @@
 rootProject.name = 'ktor-router'
 
+include 'api'
+include 'core'
+include 'plugins:testplugin'
+
+include 'plugins:notifications'
+findProject(':plugins:notifications')?.name = 'notifications'
+

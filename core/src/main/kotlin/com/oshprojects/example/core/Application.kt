@@ -1,5 +1,8 @@
-package app
+package com.oshprojects.example.core
 
+import com.oshprojects.example.api.Plugin
+import com.oshprojects.example.notification.NotificationPlugin
+import com.oshprojects.example.testplugin.TestPlugin
 import org.jetbrains.ktor.application.*
 import org.jetbrains.ktor.features.*
 import org.jetbrains.ktor.gson.*
@@ -8,8 +11,6 @@ import org.jetbrains.ktor.locations.*
 import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.routing.*
 import org.jetbrains.ktor.websocket.*
-import plugins.*
-import api.*
 
 data class Response(val route: String)
 data class Error(val route: String,

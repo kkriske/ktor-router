@@ -1,4 +1,4 @@
-package app
+package com.oshprojects.example.core
 
 import com.github.salomonbrys.kodein.*
 
