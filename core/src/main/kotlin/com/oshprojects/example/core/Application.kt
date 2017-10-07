@@ -50,8 +50,7 @@ fun Route.api() {
     route("/api") {
         val kodein = MutableKodein()
         val installedPlugins = hashSetOf<String>()
-        val routeMap = hashMapOf<String, Pair<String, Route>>()
-        val usedRoutes = hashSetOf<String>()
+        val routeMap = hashMapOf<String, Route>()
         val lock = Any()
 
         fun Plugin.install() {
@@ -62,8 +61,7 @@ fun Route.api() {
                 config.routerConfig?.let {
                     if (routeMap.containsKey(it.path))
                         throw DuplicateRouteException("A Route with path '${it.path}' already exists.")
-                    routeMap[id] = it.path to route(it.path, it.route)
-                    usedRoutes.add(it.path)
+                    routeMap[it.path] = route(it.path, it.route)
                 }
                 installedPlugins.add(id)
                 kodein.addModule(id, config.providerConfig.module)
@@ -72,10 +70,10 @@ fun Route.api() {
 
         fun Plugin.uninstall() {
             synchronized(lock) {
-                if(installedPlugins.remove(id)){
-                    routeMap.remove(id)?.let { (path, route) ->
-                        children.remove(route)
-                        usedRoutes.remove(path)
+                if (installedPlugins.remove(id)) {
+                    config.routerConfig?.let {
+                        routeMap.remove(it.path)?.let(children::remove) ?:
+                                throw IllegalStateException("congratulations, you've reached an impossible state!")
                     }
                     kodein.removeModule(id)
                 }
