@@ -48,38 +48,10 @@ fun Application.main() {
 
 fun Route.api() {
     route("/api") {
-        val kodein = MutableKodein()
-        val installedPlugins = hashSetOf<String>()
-        val routeMap = hashMapOf<String, Route>()
-        val lock = Any()
+        val pluginManager = PluginManager(this)
 
-        fun Plugin.install() {
-            if (installedPlugins.contains(id))
-                throw DuplicatePluginException("A Plugin with id '$id' already exists.")
-
-            synchronized(lock) {
-                config.routerConfig?.let {
-                    if (routeMap.containsKey(it.path))
-                        throw DuplicateRouteException("A Route with path '${it.path}' already exists.")
-                    routeMap[it.path] = route(it.path, it.route)
-                }
-                installedPlugins.add(id)
-                kodein.addModule(id, config.providerConfig.module)
-            }
-        }
-
-        fun Plugin.uninstall() {
-            synchronized(lock) {
-                if (installedPlugins.remove(id)) {
-                    config.routerConfig?.let {
-                        routeMap.remove(it.path)?.let(children::remove) ?:
-                                throw IllegalStateException("congratulations, you've reached an impossible state!")
-                    }
-                    kodein.removeModule(id)
-                }
-
-            }
-        }
+        fun Plugin.install() = pluginManager.install(this)
+        fun Plugin.uninstall() = pluginManager.uninstall(this)
 
         //install TestPlugin by default
         TestPlugin.install()
@@ -101,8 +73,4 @@ fun Route.api() {
     }
 }
 
-private class DuplicatePluginException(message: String) : Exception(message)
-private class PluginNotFoundException(message: String) : Exception(message)
-
-private class DuplicateRouteException(message: String) : Exception(message)
 
