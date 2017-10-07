@@ -21,7 +21,6 @@ class MutableKodeinSpec : Spek({
             val answer = 5
             val module = Kodein.Module { constant("answer") with answer }
 
-
             on("Kodein Module added") {
                 kodein.addModule(id, module)
 
@@ -43,7 +42,6 @@ class MutableKodeinSpec : Spek({
                 }
             }
         }
-
     }
 
     given("A MutableKodein with one module installed") {
@@ -80,7 +78,6 @@ class MutableKodeinSpec : Spek({
                     kodein.instance<Int>("answer")
                 }
             }
-
 
             it("should create a new internal Kodein instance") {
                 assertNotEquals(container, kodein.container)

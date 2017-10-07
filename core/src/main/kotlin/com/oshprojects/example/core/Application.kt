@@ -48,22 +48,41 @@ fun Application.main() {
 
 fun Route.api() {
     route("/api") {
-        val map: HashMap<String, Route> = hashMapOf()
         val kodein = MutableKodein()
+        val installedPlugins = hashSetOf<String>()
+        val routeMap = hashMapOf<String, Pair<String, Route>>()
+        val usedRoutes = hashSetOf<String>()
+        val lock = Any()
 
         fun Plugin.install() {
-            if (map.containsKey(id)) throw DuplicatePluginException("A Plugin with id '$id' already exists.")
-            //TODO: check the uniqueness of the registered path
-            config.routerConfig?.let { map[id] = route(it.path, it.route) }
-            kodein.addModule(id, config.providerConfig.module)
+            if (installedPlugins.contains(id))
+                throw DuplicatePluginException("A Plugin with id '$id' already exists.")
+
+            synchronized(lock) {
+                config.routerConfig?.let {
+                    if (routeMap.containsKey(it.path))
+                        throw DuplicateRouteException("A Route with path '${it.path}' already exists.")
+                    routeMap[id] = it.path to route(it.path, it.route)
+                    usedRoutes.add(it.path)
+                }
+                installedPlugins.add(id)
+                kodein.addModule(id, config.providerConfig.module)
+            }
         }
 
         fun Plugin.uninstall() {
-            //TODO: if a plugin does not specify routes, map.remove returns `null` and the error should not be thrown.
-            val router = map.remove(id) ?: throw PluginNotFoundException("There was no plugin with id $id installed.")
-            children.remove(router)
-            kodein.removeModule(id)
+            synchronized(lock) {
+                if(installedPlugins.remove(id)){
+                    routeMap.remove(id)?.let { (path, route) ->
+                        children.remove(route)
+                        usedRoutes.remove(path)
+                    }
+                    kodein.removeModule(id)
+                }
+
+            }
         }
+
         //install TestPlugin by default
         TestPlugin.install()
         NotificationPlugin.install()
@@ -86,4 +105,6 @@ fun Route.api() {
 
 private class DuplicatePluginException(message: String) : Exception(message)
 private class PluginNotFoundException(message: String) : Exception(message)
+
+private class DuplicateRouteException(message: String) : Exception(message)
 

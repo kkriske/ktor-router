@@ -7,7 +7,7 @@ import com.github.salomonbrys.kodein.*
  *
  * This implementation is based on the ConfigurableKodein implementation at https://github.com/SalomonBrys/Kodein
  */
-internal class MutableKodein : Kodein {
+class MutableKodein : Kodein {
 
     private val _lock = Any()
     private val _map: MutableMap<String, Kodein.Builder.() -> Unit> = hashMapOf()
@@ -46,4 +46,4 @@ internal class MutableKodein : Kodein {
 
 }
 
-internal class DuplicateModuleException(message: String) : Throwable(message)
+class DuplicateModuleException(message: String) : Throwable(message)
