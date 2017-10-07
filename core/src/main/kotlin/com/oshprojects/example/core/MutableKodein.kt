@@ -7,7 +7,7 @@ import com.github.salomonbrys.kodein.*
  *
  * This implementation is based on the ConfigurableKodein implementation at https://github.com/SalomonBrys/Kodein
  */
-class MutableKodein : Kodein {
+internal class MutableKodein : Kodein {
 
     private val _lock = Any()
     private val _map: MutableMap<String, Kodein.Builder.() -> Unit> = hashMapOf()
@@ -16,6 +16,8 @@ class MutableKodein : Kodein {
 
     fun addModule(id: String, module: Kodein.Module) {
         synchronized(_lock) {
+            if (_map.containsKey(id))
+                throw DuplicateModuleException("A module with id: '$id' already exists.")
             _instance = null
             _map[id] = { import(module) }
         }
@@ -43,3 +45,5 @@ class MutableKodein : Kodein {
     override val container: KodeinContainer get() = getOrConstruct().container
 
 }
+
+internal class DuplicateModuleException(message: String) : Throwable(message)

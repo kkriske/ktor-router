@@ -53,6 +53,7 @@ fun Route.api() {
 
         fun Plugin.install() {
             if (map.containsKey(id)) throw DuplicatePluginException("A Plugin with id '$id' already exists.")
+            //TODO: check the uniqueness of the registered path
             config.routerConfig?.let { map[id] = route(it.path, it.route) }
             kodein.addModule(id, config.providerConfig.module)
         }
